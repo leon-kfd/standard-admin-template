@@ -1,47 +1,18 @@
 <template>
-  <div class="home-page"
-       id="AdminHome">
+  <div class="home-page">
     <div class="app-nav"
-         :style="{width: isCollapse ? '64px' : '200px'}">
+         :style="{width: navWidth, background: backgroundColor}">
       <el-menu class="el-menu-vertical-demo"
                :collapse="isCollapse"
-               :default-active="activeRouteName">
-        <template v-for="(menu,index) in menuList">
-          <el-submenu :index="menu.name"
-                      :key="index"
-                      :class="{'menu-active': menu.name == activeRouteName}"
-                      v-if="menu.children&&!menu.noChildren">
-            <template slot="title">
-              <i :class="menu.meta.iconClass"></i>
-              <span slot="title">{{ menu.meta.label }}</span>
-            </template>
-            <el-menu-item v-for="(menuSecond, indexSecond) in menu.children"
-                          :key="indexSecond"
-                          :index="menuSecond.name"
-                          :class="{'menu-active': menuSecond.name == activeRouteName}"
-                          @click="$router.push({name:menuSecond.name})"
-                          style="padding-left: 55px;">{{menuSecond.meta.label}}</el-menu-item>
-          </el-submenu>
-          <el-menu-item v-else-if="menu.outer"
-                        :index="menu.name"
-                        :key="index"
-                        @click.native.stop="open(menu.outer.outerUrl)">
-            <i :class="menu.meta.iconClass"></i>
-            <span slot="title">{{ menu.meta.label }}</span>
-          </el-menu-item>
-          <el-menu-item v-else-if="menu.noChildren"
-                        :index="menu.name"
-                        :key="index"
-                        :class="{'menu-active': menu.name == activeRouteName}"
-                        @click="$router.push({name:menu.name})">
-            <i :class="menu.meta.iconClass"></i>
-            <span slot="title">{{ menu.meta.label }}</span>
-          </el-menu-item>
-        </template>
+               :default-active="activeRouteName"
+               :background-color="backgroundColor"
+               :text-color="textColor"
+               :active-text-color="activeTextColor">
+        <Menu :menu-list="menuList" :active-route-name="activeRouteName"></Menu>
       </el-menu>
     </div>
     <div class="app-header clear"
-         :style="{left: isCollapse ? '64px' : '200px'}">
+         :style="{left: navWidth}">
       <span class="icon-bar-box"
             :class="{'is-collapse': isCollapse}"
             @click="isCollapse= !isCollapse">
@@ -65,8 +36,7 @@
       <div class="user-info-box fr">
         <el-dropdown>
           <div>
-            <img class="user-img"
-                 :src="userImg">
+            <img class="user-img" :src="userImg">
             <span class="username">{{username}}</span>
           </div>
           <el-dropdown-menu slot="dropdown">
@@ -78,26 +48,39 @@
     </div>
     <div class="app-content"
          ref="appContent"
-         :style="{left: isCollapse ? '64px' : '200px'}">
+         :style="{ left: navWidth }">
       <router-view :is-collapse="isCollapse" />
     </div>
   </div>
 </template>
 <script>
 import { menuRouter } from '@/router/index'
+import Menu from '@/components/Menu'
+/* eslint-disable */
+const { navConfig:config } = window.config
 export default {
-  name: 'defaultLayout',
+  name: 'MainLayout',
+  components: {
+    Menu
+  },
   data () {
     return {
+      backgroundColor: config.backgroundColor,
+      textColor: config.textColor,
+      activeTextColor: config.activeTextColor,
+      navDefaultWidth: config.navDefaultWidth,
+      navCollapseWidth: config.navCollapseWidth,
+      menuList: menuRouter,
+      activeRouteName: null,
       isCollapse: false,
-      adminRouterList: [],
       username: 'Nick',
-      userImg: 'https://placem.at/people?w=80',
-      activeRouteName: '',
-      menuList: menuRouter
+      userImg: 'https://placem.at/people?w=80'
     }
   },
   computed: {
+    navWidth () {
+      return this.isCollapse ? `${this.navCollapseWidth}px` : `${this.navDefaultWidth}px`
+    },
     breadList () {
       const temp = this.$route.matched
       temp.shift()
@@ -117,12 +100,7 @@ export default {
       immediate: true
     }
   },
-  mounted () {
-  },
   methods: {
-    open (url) {
-      window.open(url)
-    },
     toLogout () {
       sessionStorage.removeItem('token')
       this.$message.success('退出登录....')
@@ -147,6 +125,9 @@ export default {
   overflow-y: auto;
   transition: all 0.4s;
   padding-top: 100px;
+  .el-menu {
+    border-right: none;
+  }
 }
 .app-header {
   position: absolute;
@@ -208,6 +189,7 @@ export default {
       border-radius: 50%;
       display: inline-block;
       vertical-align: middle;
+      margin-right: 5px;
     }
     .username {
       font-size: 14px;
@@ -229,10 +211,5 @@ export default {
   font-size: 14px;
   transition: all 0.4s;
   min-width: 400px;
-}
-</style>
-<style>
-#AdminHome .el-menu {
-  border-right: none;
 }
 </style>

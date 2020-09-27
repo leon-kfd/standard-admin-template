@@ -1,29 +1,9 @@
 # standard-admin-template
 
-## Project setup
-```
-npm install
-```
+一个后台管理系统模板，基于Vue@2.X和ElementUI
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
++ 导航菜单自动通过路由文件生成
++ 封装Axios
++ 路由切换自动取消前路由中未完成的请求
++ 全局可配置化: 编辑public/config.js文件可配置系统参数，在项目打包后也生效
 
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Run your tests
-```
-npm run test
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

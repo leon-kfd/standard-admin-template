@@ -1,7 +1,5 @@
 <template>
-  <div>first-2
-  <router-view></router-view>
-  </div>
+  <div>first-2-2</div>
 </template>
 
 <script>
